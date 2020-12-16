@@ -1,0 +1,19 @@
+[is=nmd-th][data-sort]::after {
+	content: "\0021f3";
+}
+
+[is=nmd-th][data-sort=asc]::after {
+	content: "\0021e9";
+}
+
+[is=nmd-th][data-sort=desc]::after {
+	content: "\0021e7";
+}
+
+[is=nmd-td-filter] input {
+	appearance: none;
+	border: none;
+	padding: initial;
+	margin: initial;
+	width: 100%;
+}
