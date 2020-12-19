@@ -5,14 +5,4 @@ import NmdTableData from "./nmd-table-data";
 import NmdTdFilter from "./nmd-td-filter";
 import NmdTh from "./nmd-th";
 
-window.NmdTable = NmdTable;
-window.NmdTh = NmdTh;
-window.NmdTableData = NmdTableData;
-
-NmdTableData.registerDataMapper(new JsonObjectDataMapper());
-NmdTableData.registerDataMapper(new SimpleTsvDataMapper());
-
-customElements.define(NmdTable.elementName, NmdTable, {extends: "table"});
-customElements.define(NmdTh.elementName, NmdTh, {extends: "th"});
-customElements.define(NmdTdFilter.elementName, NmdTdFilter, {extends: "td"});
-customElements.define(NmdTableData.elementName, NmdTableData, {extends: "tbody"});
+export {NmdTable, NmdTableData, NmdTdFilter, NmdTh, JsonObjectDataMapper, SimpleTsvDataMapper}

@@ -1,0 +1,25 @@
+{
+	"name": "nmd-tables",
+	"version": "1.0.0",
+	"main": "./js/main.js",
+	"browser": "./dist/nmd-tables.js",
+	"sass": "scss/style.scss",
+	"dependencies": {},
+	"devDependencies": {
+		"css-loader": "^4.3.0",
+		"sass": "^1.27.0",
+		"sass-loader": "^10.0.2",
+		"style-loader": "^1.3.0",
+		"webpack": "^4.44.2",
+		"webpack-cli": "^3.3.12"
+	},
+	"scripts": {
+		"build": "webpack"
+	},
+	"author": "Lukáš Kotržena <lkotrzena@gmail.com> (https://kotrzena.eu)",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/no-more-dependencies/nmd-tables.git"
+	}
+}
