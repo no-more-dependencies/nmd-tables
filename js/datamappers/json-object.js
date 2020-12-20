@@ -6,7 +6,11 @@ export default class JsonObjectDataMapper {
 	async mapResponse(response, tbody) {
 		let json = await response.json();
 
-		for(let obj of json.content)
+		this.processData(json, tbody);
+	}
+
+	processData(data, tbody){
+		for(let obj of data)
 			tbody.addRow(obj);
 	}
 }

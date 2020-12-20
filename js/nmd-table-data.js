@@ -1,3 +1,5 @@
+import ColumnsInfo from "./helpers/columns-info";
+
 export default 
 class NmdTableData extends HTMLTableSectionElement {
 	static get elementName() {
@@ -10,6 +12,12 @@ class NmdTableData extends HTMLTableSectionElement {
 		let types = dataMapper.getHandledContentTypes();
 		for(let type of types)
 			NmdTableData.dataMappers[type] = dataMapper;
+	}
+
+	constructor(){
+		super();
+		this.columnsInfo = new ColumnsInfo();
+		this.rowData = [];
 	}
 
 	observedAttributes() {
@@ -83,26 +91,12 @@ class NmdTableData extends HTMLTableSectionElement {
 	}
 
 	get colsInfo(){
-		let colgroup = this.closest("table").querySelector("colgroup");
-		if(!colgroup)
-			return null;
-		if(this.colgroupLastHtml == colgroup.innerHTML)
-			return this.lastColsInfo;
-
-		this.colgroupLastHtml = colgroup.innerHTML;
-		this.lastColsInfo = Array.from(colgroup.querySelectorAll("col")).map(
-			(c) => {
-				return {
-					name: c.getAttribute("data-name"),
-					title: c.title,
-					span: c.span
-				}
-			}
-		);
-		return this.lastColsInfo;
+		this.columnsInfo.parseColsDomInfo(this.closest("table").querySelector("colgroup"));
+		return this.columnsInfo.columns;
 	}
 
 	addRow(row){
+		this.rowData.push(row);
 		if(Array.isArray(row)){
 			this.appendHtml("<tr><td>" + row.join("</td><td>") + "</td></tr>");
 			return;
@@ -121,6 +115,31 @@ class NmdTableData extends HTMLTableSectionElement {
 			this.appendHtml(rowHtml);
 		} else {
 			this.appendHtml("<tr><td>" + Object.values(row).join("</td><td>") + "</td></tr>");
+		}
+	}
+
+	render(){
+		let colsInfo = this.colsInfo;
+		for(let i = 0; i < data.lenth; i++){
+			let row = rowData[i];
+			if(Array.isArray(row)){
+				this.appendHtml("<tr><td>" + row.join("</td><td>") + "</td></tr>");
+				return;
+			}
+			
+			if(colsInfo){
+				let rowHtml = "";
+				if(colsInfo){
+					rowHtml += "<tr>";
+					for(let colInfo of colsInfo){
+						rowHtml += `<td>${row[colInfo.name]}</td>`;
+					}
+					rowHtml += "</tr>";
+				}
+				this.appendHtml(rowHtml);
+			} else {
+				this.appendHtml("<tr><td>" + Object.values(row).join("</td><td>") + "</td></tr>");
+			}
 		}
 	}
 }
