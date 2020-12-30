@@ -18,6 +18,9 @@ class NmdTableData extends HTMLTableSectionElement {
 		super();
 		this.columnsInfo = new ColumnsInfo();
 		this.rowData = [];
+		this.pageSize = Number.POSITIVE_INFINITY;
+		this.totalPages = 1;
+		this.page = 0;
 	}
 
 	observedAttributes() {
@@ -35,7 +38,7 @@ class NmdTableData extends HTMLTableSectionElement {
 	}
 	
 	connectedCallback() {
-		this.fetchData();
+		this.render();
 	}
 
 	get src() {
@@ -46,16 +49,61 @@ class NmdTableData extends HTMLTableSectionElement {
 		this.setAttribute("data-src", value);
 	}
 
+	get pageAttribute() {
+		return this.getAttribute("data-page-attribute") || "page";
+	}
+
+	set pageAttribute(value) {
+		this.setAttribute("data-page-attribute", value);
+	}
+
+	get pageSizeAttribute() {
+		return this.getAttribute("data-page-size-attribute") || "size";
+	}
+
+	set pageSizeAttribute(value) {
+		this.getAttribute("data-page-size-attribute", value);
+	}
+
+	get fullUrl(){
+		let url = new URL(this.src);
+		let search = new URLSearchParams(url.search);
+		if(this.pageAttribute)
+			search.set(this.pageAttribute, this.page);
+		if(this.pageSizeAttribute && Number.isFinite(this.pageSize))
+			search.set(this.pageSizeAttribute, this.pageSize);
+		search = search.toString()
+		if(search)
+			url.search = "?" + search;
+		return url.toString();
+	}
+
 	async nextPage(){
-		if(!this.page)
-			this.page = 0;
-		this.page++;
+		if((this.page + 1) < this.totalPages){
+			this.page++;
+			await this.render();
+		}
+	}
+
+	async prevPage(){
+		if(this.page > 0){
+			this.page--;
+			await this.render();
+		}
+	}
+
+	async goToPage(pageNum){
+		if(pageNum >= 0 && pageNum < this.totalPages){
+			this.page = pageNum;
+			await this.render();
+		}
 	}
 
 	async fetchData() {
-		let res = await fetch(this.src);
+		let url = this.fullUrl();
+		let res = await fetch(url);
 		if(!res.ok)
-			throw new Error(`Fetching data from "${this.src}" failed with status: ${res.statusText}.`);
+			throw new Error(`Fetching data from "${url}" failed with status: ${res.statusText}.`);
 		let type = this.getAttribute("data-type");
 		if(!type)
 			type = res.headers.get("Content-Type");
@@ -67,7 +115,7 @@ class NmdTableData extends HTMLTableSectionElement {
 				await ret;
 			this.commitAppending();
 		} else
-			throw new Error(`Mapping data from "${this.src}" failed. No mapper found for content type "${type}".`);
+			throw new Error(`Mapping data from "${url}" failed. No mapper found for content type "${type}".`);
 	}
 
 	beginAppending(){
@@ -97,45 +145,27 @@ class NmdTableData extends HTMLTableSectionElement {
 
 	addRow(row){
 		this.rowData.push(row);
-		if(Array.isArray(row)){
-			this.appendHtml("<tr><td>" + row.join("</td><td>") + "</td></tr>");
-			return;
-		}
-
-		let colsInfo = this.colsInfo;
-		if(colsInfo){
-			let rowHtml = "";
-			if(colsInfo){
-				rowHtml += "<tr>";
-				for(let colInfo of colsInfo){
-					rowHtml += `<td>${row[colInfo.name]}</td>`;
-				}
-				rowHtml += "</tr>";
-			}
-			this.appendHtml(rowHtml);
-		} else {
-			this.appendHtml("<tr><td>" + Object.values(row).join("</td><td>") + "</td></tr>");
-		}
 	}
 
-	render(){
+	async render(){
 		let colsInfo = this.colsInfo;
-		for(let i = 0; i < data.lenth; i++){
-			let row = rowData[i];
+		if(!this.rowData[this.page*this.pageSize])
+			await this.fetchData();
+		for(let i = this.page*this.pageSize; i < this.pageSize; i++){
+			if(i >= this.rowData.length)
+				break;
+			let row = this.rowData[i];
 			if(Array.isArray(row)){
 				this.appendHtml("<tr><td>" + row.join("</td><td>") + "</td></tr>");
 				return;
 			}
 			
 			if(colsInfo){
-				let rowHtml = "";
-				if(colsInfo){
-					rowHtml += "<tr>";
-					for(let colInfo of colsInfo){
-						rowHtml += `<td>${row[colInfo.name]}</td>`;
-					}
-					rowHtml += "</tr>";
+				let rowHtml = "<tr>";
+				for(let colInfo of colsInfo){
+					rowHtml += `<td>${row[colInfo.name]}</td>`;
 				}
+				rowHtml += "</tr>";
 				this.appendHtml(rowHtml);
 			} else {
 				this.appendHtml("<tr><td>" + Object.values(row).join("</td><td>") + "</td></tr>");
