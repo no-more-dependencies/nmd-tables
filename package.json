@@ -1,6 +1,7 @@
 {
 	"name": "nmd-tables",
 	"version": "1.0.0",
+	"type": "module",
 	"main": "./js/main.js",
 	"browser": "./dist/nmd-tables.js",
 	"sass": "scss/style.scss",
