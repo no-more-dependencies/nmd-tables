@@ -9,7 +9,7 @@ class Backend {
 	 * @param {DataSource} dataSource 
 	 * @param {*} holdPages 
 	 */
-	constructor(dataSource = null, holdPages = false){
+	constructor(dataSource, holdPages = false){
 		this._data = [];
 		this._dataSize = Number.POSITIVE_INFINITY;
 		this._pageSize = 5;
@@ -18,11 +18,30 @@ class Backend {
 		this._dataSource = dataSource;
 	}
 
+	get dataSource(){ return this._dataSource; }
+
+	set dataSource(value){
+		this._dataSource = value;
+		this._data = [];
+		this._dataSize = Number.POSITIVE_INFINITY;
+		this._page = 0;
+	}
+
+	/**
+	 * 
+	 * @param {*} val 
+	 * @returns 
+	 */
 	async setPage(val){
 		if(!Number.isInteger(val))
-			return;
+			return false;
+		let prevPageValue = this._page;
 		this._page = Math.max(0, Math.min(this.pageCount - 1, val));
-		await this.fetchData(true);
+		if(prevPageValue != this._page){
+			await this.fetchData(true);
+			return true;
+		}
+		return false;
 	}
 
 	get pageSize(){ return this._pageSize; }

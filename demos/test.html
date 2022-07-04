@@ -5,16 +5,25 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
-	<script type="module">
-		import Backend from "../js/helpers/backend.js";
-		import RestSource from "../js/data-sources/rest-source.js";
-
-		window.backend = new Backend(new RestSource("./data.json"));
-	</script>
+	<script src="../dist/nmd-tables.js"></script>
+	<style>
+		.active {
+			font-weight: bold;
+		}
+	</style>
 </head>
 <body>
-	<table is="nmd-table">
-
-	</table>
+	<nmd-table src="./data.json">
+		<nmd-col name="id" title="Id"></nmd-col>
+		<nmd-col name="name" title="Name"></nmd-col>
+		<nmd-col name="age" title="Age"></nmd-col>
+		<slot name="table"></slot>
+		<nmd-basic-paginator page="0" pages="5" next-prev-buttons></nmd-basic-paginator>
+	</nmd-table>
+	<script defer>
+		let table = document.querySelector("nmd-table");
+		table.dataSource = new NmdRestSource(new URL("./data.json", location));
+		table.render();
+	</script>
 </body>
 </html>

@@ -1,20 +1,24 @@
-import JsonObjectDataMapper from "./datamappers/json-object";
-import SimpleTsvDataMapper from "./datamappers/simple-tsv";
-import NmdPagination from "./nmd-pagination";
+//@ts-check
+
+import RestSource from "./data-sources/rest-source";
+import NmdCol from "./nmd-col";
 import NmdTable from "./nmd-table";
 import NmdTableData from "./nmd-table-data";
 import NmdTdFilter from "./nmd-td-filter";
 import NmdTh from "./nmd-th";
+import NmdBasicPaginator from "./paginators/basic-paginator";
 
-window.NmdTable = NmdTable;
-window.NmdTh = NmdTh;
-window.NmdTableData = NmdTableData;
+Object.assign(window, {
+	NmdTable, RestSource,
 
-NmdTableData.registerDataMapper(new JsonObjectDataMapper());
-NmdTableData.registerDataMapper(new SimpleTsvDataMapper());
+	NmdRestSource: RestSource,
+});
 
-customElements.define(NmdTable.elementName, NmdTable, {extends: "table"});
+customElements.define(NmdTable.elementName, NmdTable);
+customElements.define(NmdCol.elementName, NmdCol);
+
+customElements.define(NmdBasicPaginator.elementName, NmdBasicPaginator);
+
 customElements.define(NmdTh.elementName, NmdTh, {extends: "th"});
 customElements.define(NmdTdFilter.elementName, NmdTdFilter, {extends: "td"});
 customElements.define(NmdTableData.elementName, NmdTableData, {extends: "tbody"});
-customElements.define(NmdPagination.elementName, NmdPagination);

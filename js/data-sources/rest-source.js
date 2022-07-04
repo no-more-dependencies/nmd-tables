@@ -9,7 +9,7 @@ export default
 class RestSource extends DataSource {
 	/**
 	 * 
-	 * @param {string} url 
+	 * @param {URL} url 
 	 * @param {IDataMapper} dataMapper 
 	 */
 	constructor(url, dataMapper = new JsonObjectDataMapper(), paramMapper = RestSource.defaultUrlParamMapper){
@@ -26,9 +26,8 @@ class RestSource extends DataSource {
 	 * @returns {Promise<TableData>}
 	 */
 	async fetchData(page, pageSize){
-		let url = new URL(this.url, window.location.toString());
-		this.paramMapper(url, page, pageSize);
-		let response = await fetch(url.toString());
+		this.paramMapper(this.url, page, pageSize);
+		let response = await fetch(this.url.toString());
 		return this.dataMapper.map(await response.text());
 	}
 }
