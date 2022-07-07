@@ -1,12 +1,14 @@
 //@ts-check
 
+import HTMLParsedElement from "html-parsed-element";
 import DataSource from "./data-sources/data-source";
+import RestSource from "./data-sources/rest-source";
 import Backend from "./helpers/backend";
 import Paginator from "./paginators/paginator";
 import TableRenderer from "./renderers/table-renderer";
 
 export default
-class NmdTable extends HTMLElement {
+class NmdTable extends HTMLParsedElement {
 	static get elementName() {
 		return "nmd-table";
 	}
@@ -15,11 +17,30 @@ class NmdTable extends HTMLElement {
 		super();
 		// @ts-ignore custom event type
 		this.addEventListener("page-changed", this._pageChangedListener);
-		this._backend = new Backend(new DataSource());
+		this._backend = new Backend(new DataSource(new URL("none:")));
+		/** @type {import("./nmd-col.js").default[]} */
 		this._cols = [];
 		this._renderer = new TableRenderer(this._backend, this._cols);
 		/** @type {HTMLElement?} */
 		this._rendered = null;
+	}
+
+	parsedCallback(){
+		this.initDataSource();
+	}
+
+	async initDataSource(){
+		let urlNullable = this.src;
+		if(!urlNullable)
+			throw new Error("Missing source URL.");
+		/** @type {URL} */
+		let url = urlNullable;
+		let dataSource = NmdTable.dataSourceRegistry.find(s => s.handlesProtocols.includes(url.protocol));
+		if(!dataSource)
+			throw new Error(`No registered data source handler for "${url.protocol}"`);
+		this._backend = new Backend(new dataSource(url));
+		this._renderer._backend = this._backend;
+		await this.render();
 	}
 
 	get src(){
@@ -84,3 +105,6 @@ class NmdTable extends HTMLElement {
 		return this.querySelector("slot[name=table]") || this;
 	}
 }
+
+/** @type {(typeof DataSource)[]} */
+NmdTable.dataSourceRegistry = [RestSource];

@@ -22,7 +22,6 @@ export default class Paginator extends HTMLElement {
 	}
 
 	_dispatchPageChanged(){
-		console.log("page-changed", this.page);
 		this.dispatchEvent(new CustomEvent("page-changed", {
 			detail: {
 				page: this.page

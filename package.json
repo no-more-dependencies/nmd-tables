@@ -4,7 +4,9 @@
 	"main": "./js/main.js",
 	"browser": "./dist/nmd-tables.js",
 	"sass": "scss/style.scss",
-	"dependencies": {},
+	"dependencies": {
+		"html-parsed-element": "^0.4.1"
+	},
 	"devDependencies": {
 		"css-loader": "^6.7.1",
 		"sass": "^1.53.0",

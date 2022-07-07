@@ -20,10 +20,5 @@
 		<slot name="table"></slot>
 		<nmd-basic-paginator page="0" pages="5" next-prev-buttons></nmd-basic-paginator>
 	</nmd-table>
-	<script defer>
-		let table = document.querySelector("nmd-table");
-		table.dataSource = new NmdRestSource(new URL("./data.json", location));
-		table.render();
-	</script>
 </body>
 </html>

@@ -8,13 +8,19 @@ import DataSource from "./data-source.js";
 export default
 class RestSource extends DataSource {
 	/**
+	 * @returns {string[]} handled URL protocols by this source
+	 */
+	static get handlesProtocols(){
+		return ["https:", "http:"];
+	}
+
+	/**
 	 * 
 	 * @param {URL} url 
 	 * @param {IDataMapper} dataMapper 
 	 */
 	constructor(url, dataMapper = new JsonObjectDataMapper(), paramMapper = RestSource.defaultUrlParamMapper){
-		super();
-		this.url = url;
+		super(url);
 		this.dataMapper = dataMapper;
 		this.paramMapper = paramMapper;
 	}
