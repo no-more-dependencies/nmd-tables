@@ -1,5 +1,4 @@
 //@ts-check
-
 import HTMLParsedElement from "html-parsed-element";
 import DataSource from "./data-sources/data-source";
 import RestSource from "./data-sources/rest-source";
@@ -62,6 +61,14 @@ class NmdTable extends HTMLParsedElement {
 		this._backend.dataSource = value;
 	}
 
+	get page(){
+		return this._backend.page;
+	}
+
+	get pages(){
+		return this._backend.pageCount;
+	}
+
 	async setPage(page){
 		if(await this._backend.setPage(page))
 			await this.render();
@@ -69,7 +76,7 @@ class NmdTable extends HTMLParsedElement {
 
 	async render(){
 		await this._backend.fetchData(true);
-		this._setPaginatorsState(this._backend._page, this._backend.pageCount);
+		this.dispatchEvent(new CustomEvent("pages-changed"));
 		if(this._rendered)
 			this._rendered.parentElement?.removeChild(this._rendered);
 		this._rendered = this._renderer.render();
@@ -90,15 +97,6 @@ class NmdTable extends HTMLParsedElement {
 			this._cols.pop();
 		for(let col of this.querySelectorAll("nmd-col"))
 			this._cols.push(col);
-	}
-
-	_setPaginatorsState(page, pages){
-		for(let paginator of [...document.querySelectorAll("nmd-basic-paginator, [nmd-paginator]")]){
-			if(paginator instanceof Paginator){
-				paginator.pages = pages;
-				paginator.page = page;
-			}
-		}
 	}
 
 	get _renderSlot(){

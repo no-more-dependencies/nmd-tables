@@ -53,6 +53,10 @@ class Backend {
 		await this.fetchData(true);
 	}
 
+	get page(){
+		return this._page;
+	}
+
 	get pageCount(){
 		if(this._pageSize == Number.POSITIVE_INFINITY)
 			return 1;

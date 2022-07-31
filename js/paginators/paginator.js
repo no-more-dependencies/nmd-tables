@@ -2,10 +2,20 @@
 
 /** @typedef {CustomEvent<{ page: number; }>} PageChangedEvent */
 
-/** @interface */
+/** 
+ * @typedef Paginable
+ * @property {number} page
+ * @property {number} pages
+ */
+
 export default class Paginator extends HTMLElement {
 	constructor(){
 		super();
+		this.pagesChangedListener = e => {
+			this.page = e.target.page;
+			this.pages = e.target.pages;
+			this.render();
+		};
 	}
 
 	attributeChangedCallback(name, _oldValue, _newValue){
@@ -18,7 +28,45 @@ export default class Paginator extends HTMLElement {
 	}
 
 	connectedCallback(){
+		this._findTarget();
 		this.render();
+	}
+
+	adoptedCallback(){
+		this._findTarget();
+		this.render();
+	}
+
+	_findTarget(){
+		// Remove listener from previous target
+		if(this.target)
+			this.target.removeEventListener("pages-changed", this.pagesChangedListener);
+
+		// Check target selector from attribute
+		let selector = this.getAttribute("target");
+		/** @type {(Element & Paginable) | null} */
+		let target = null;
+		if(selector){
+			//@ts-ignore
+			target = document.querySelector(selector);
+		}
+		if(target && typeof(target.page) === "number" && typeof(target.pages) === "number")
+			this.target = target;
+
+		// Loop through ancestors to find Paginable
+		target = this;
+		while(target){
+			// @ts-ignore
+			target = target.parentElement;
+			// Duck typing check
+			if(target && typeof(target.page) === "number" && typeof(target.pages) === "number"){
+				this.target = target;
+			}
+		}
+
+		// Register listener on new target
+		if(this.target)
+			this.target.addEventListener("pages-changed", this.pagesChangedListener);
 	}
 
 	_dispatchPageChanged(){
