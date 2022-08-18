@@ -22,7 +22,7 @@ export default class TableRenderer extends Renderer {
 		for(let row of data){
 			html.push("<tr>");
 			for(let col of this._columns){
-				html.push(`<td>${row[col.name]}</td>`);
+				html.push(`<td>${this.renderCellValue(row[col.name], col)}</td>`);
 			}
 			html.push("</tr>");
 		}

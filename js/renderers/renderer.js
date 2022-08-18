@@ -1,5 +1,7 @@
 //@ts-check
 
+/** @typedef {import("../nmd-col").default} NmdCol */
+
 /** @interface */
 export default class Renderer {
 	/**
@@ -16,5 +18,14 @@ export default class Renderer {
 	 */
 	render(){
 		return document.createElement("div");
+	}
+
+	/**
+	 * 
+	 * @param {any} value 
+	 * @param {NmdCol} col 
+	 */
+	renderCellValue(value, col){
+		return col.format(value);
 	}
 }
