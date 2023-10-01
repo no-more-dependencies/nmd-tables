@@ -6,6 +6,15 @@ class NmdTdFilter extends NmdTd {
 		return "nmd-td-filter";
 	}
 
+	/**
+	 * @returns {ElementDefinitionOptions}
+	 */
+	static get elementOptions(){
+		return {
+			extends: "td"
+		};
+	}
+
 	get value() {
 		return this.filterInput.value;
 	}

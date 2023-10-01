@@ -14,9 +14,11 @@
 </head>
 <body>
 	<nmd-table src="./data.json">
-		<nmd-col name="id" title="Id"></nmd-col>
-		<nmd-col name="name" title="Name"></nmd-col>
-		<nmd-col name="birthday" title="Birthday" formatter="datetime"></nmd-col>
+		<nmd-table-renderer>
+			<nmd-col name="id" title="Id"></nmd-col>
+			<nmd-col name="name" title="Name"></nmd-col>
+			<nmd-col name="birthday" title="Birthday" formatter="datetime"></nmd-col>
+		</nmd-table-renderer>
 		<slot name="table"></slot>
 		<nmd-basic-paginator page="0" pages="5" next-prev-buttons></nmd-basic-paginator>
 	</nmd-table>

@@ -9,8 +9,11 @@ export default class NmdBasicPaginator extends Paginator {
 
 	constructor(){
 		super();
-		this.buttonTmpl = (page, text, active, disabled) => 
-			/*html*/`<button type="button" data-page="${page}"${disabled?" disabled":""}${active?' class="active"':""}>${text}</button>`;
+		this.buttonTmpl = (page, text, active, disabled) => {
+			let disabledAttr = disabled?" disabled":"";
+			let activeAttr = active?' class="active"':"";
+			return /*html*/`<button type="button" data-page="${page}"${disabledAttr}${activeAttr}>${text}</button>`;
+		}
 		this.addEventListener("click", e => {
 			if(!(e.target instanceof HTMLElement) || !e.target.hasAttribute("data-page"))
 				return;

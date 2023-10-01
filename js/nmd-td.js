@@ -1,5 +1,18 @@
 export default
 class NmdTd extends HTMLTableCellElement {
+	static get elementName(){
+		return "nmd-td";
+	}
+
+	/**
+	 * @returns {ElementDefinitionOptions}
+	 */
+	static get elementOptions(){
+		return {
+			extends: "td"
+		};
+	}
+
 	constructor() {
 		super();
 		this.table = null;
@@ -24,5 +37,6 @@ class NmdTd extends HTMLTableCellElement {
 				return index;
 			index += cell.colSpan;
 		}
+		return -1;
 	}
 }

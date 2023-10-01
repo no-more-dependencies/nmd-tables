@@ -1,5 +1,7 @@
 //@ts-check
 
+import { findAssociated } from "../utils/dom";
+
 /** @typedef {CustomEvent<{ page: number; }>} PageChangedEvent */
 
 /** 
@@ -38,31 +40,10 @@ export default class Paginator extends HTMLElement {
 	}
 
 	_findTarget(){
-		// Remove listener from previous target
 		if(this.target)
 			this.target.removeEventListener("pages-changed", this.pagesChangedListener);
 
-		// Check target selector from attribute
-		let selector = this.getAttribute("target");
-		/** @type {(Element & Paginable) | null} */
-		let target = null;
-		if(selector){
-			//@ts-ignore
-			target = document.querySelector(selector);
-		}
-		if(target && typeof(target.page) === "number" && typeof(target.pages) === "number")
-			this.target = target;
-
-		// Loop through ancestors to find Paginable
-		target = this;
-		while(target){
-			// @ts-ignore
-			target = target.parentElement;
-			// Duck typing check
-			if(target && typeof(target.page) === "number" && typeof(target.pages) === "number"){
-				this.target = target;
-			}
-		}
+		this.target = findAssociated(this, {page: "number", pages: "number"});
 
 		// Register listener on new target
 		if(this.target)

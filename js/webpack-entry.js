@@ -1,24 +1,18 @@
 //@ts-check
 
-import RestSource from "./data-sources/rest-source";
 import NmdCol from "./nmd-col";
 import NmdTable from "./nmd-table";
 import NmdTableData from "./nmd-table-data";
 import NmdTdFilter from "./nmd-td-filter";
 import NmdTh from "./nmd-th";
-import NmdBasicPaginator from "./paginators/basic-paginator";
+import NmdBasicPaginator from "./paginators/nmd-basic-paginator";
+import NmdTableRenderer from "./renderers/nmd-table-renderer";
+import { registerCustomElements } from "./utils/dom";
 
-Object.assign(window, {
-	NmdTable, RestSource,
+registerCustomElements({
+	NmdTable, NmdCol,
+	NmdTableRenderer,
+	NmdBasicPaginator,
 
-	NmdRestSource: RestSource,
+	NmdTh, NmdTdFilter, NmdTableData
 });
-
-customElements.define(NmdTable.elementName, NmdTable);
-customElements.define(NmdCol.elementName, NmdCol);
-
-customElements.define(NmdBasicPaginator.elementName, NmdBasicPaginator);
-
-customElements.define(NmdTh.elementName, NmdTh, {extends: "th"});
-customElements.define(NmdTdFilter.elementName, NmdTdFilter, {extends: "td"});
-customElements.define(NmdTableData.elementName, NmdTableData, {extends: "tbody"});

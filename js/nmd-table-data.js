@@ -6,6 +6,15 @@ class NmdTableData extends HTMLTableSectionElement {
 		return "nmd-tbody";
 	}
 
+	/**
+	 * @returns {ElementDefinitionOptions}
+	 */
+	static get elementOptions(){
+		return {
+			extends: "tbody"
+		};
+	}
+
 	static registerDataMapper(dataMapper){
 		if(!NmdTableData.dataMappers)
 			NmdTableData.dataMappers = {};
@@ -107,8 +116,8 @@ class NmdTableData extends HTMLTableSectionElement {
 		let type = this.getAttribute("data-type");
 		if(!type)
 			type = res.headers.get("Content-Type");
-		let typeParts = /([^\/]*\/[^\/;]*)(;.*)?/.exec(type);
-		if(NmdTableData.dataMappers && NmdTableData.dataMappers[typeParts[1]]){
+		let typeParts = /([^/]*\/[^/;]*)(;.*)?/.exec(type);
+		if(NmdTableData.dataMappers?.[typeParts[1]]){
 			this.beginAppending();
 			let ret = NmdTableData.dataMappers[typeParts[1]].mapResponse(res, this);
 			if(ret instanceof Promise)

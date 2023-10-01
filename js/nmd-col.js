@@ -1,7 +1,8 @@
 //@ts-check
 
 import { escapeHtml, localeDate, localeDateTime } from "./helpers/formatting";
-import NmdTable from "./nmd-table";
+import Renderer from "./renderers/renderer";
+import { findAssociated } from "./utils/dom";
 
 /**
  * @typedef DataType
@@ -29,14 +30,26 @@ export default class NmdCol extends HTMLElement {
 		formatters.set(name, formatter);
 	}
 
-	constructor(){
-		super();
+	connectedCallback(){
+		this._addToRenderer();
 	}
 
-	connectedCallback(){
-		let table = this.closest("nmd-table");
-		if(table instanceof NmdTable)
-			table._updateCols();
+	adoptedCallback(){
+		this._addToRenderer();
+	}
+
+	disconnectedCallback(){
+		this._removeFromRenderer();
+	}
+
+	_addToRenderer(){
+		this.renderer = /** @type {Renderer} */(findAssociated(this, Renderer));
+		this.renderer?.addCol(this);
+	}
+
+	_removeFromRenderer(){
+		this.renderer?.removeCol(this);
+		this.renderer = null;
 	}
 
 	/**

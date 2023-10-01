@@ -11,4 +11,6 @@
  * @property {any} value
  */
 
-export default function a(){}
+export default function filter(){
+	// Dummy
+}

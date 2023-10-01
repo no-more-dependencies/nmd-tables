@@ -7,8 +7,13 @@ class NmdTh extends NmdTd {
 		return "nmd-th";
 	}
 
-	constructor() {
-		super();
+	/**
+	 * @returns {ElementDefinitionOptions}
+	 */
+	static get elementOptions(){
+		return {
+			extends: "th"
+		};
 	}
 
 	connectedCallback() {

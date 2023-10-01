@@ -3,8 +3,15 @@ import HTMLParsedElement from "html-parsed-element";
 import DataSource from "./data-sources/data-source";
 import RestSource from "./data-sources/rest-source";
 import Backend from "./helpers/backend";
-import Paginator from "./paginators/paginator";
-import TableRenderer from "./renderers/table-renderer";
+
+/**
+ * @typedef {"pages-changed" | "visible-rows-changed"} EventType
+ */
+
+/**
+ * @typedef {Object} EventDetail
+ * 
+ */
 
 export default
 class NmdTable extends HTMLParsedElement {
@@ -17,15 +24,18 @@ class NmdTable extends HTMLParsedElement {
 		// @ts-ignore custom event type
 		this.addEventListener("page-changed", this._pageChangedListener);
 		this._backend = new Backend(new DataSource(new URL("none:")));
-		/** @type {import("./nmd-col.js").default[]} */
-		this._cols = [];
-		this._renderer = new TableRenderer(this._backend, this._cols);
-		/** @type {HTMLElement?} */
-		this._rendered = null;
 	}
 
 	parsedCallback(){
 		this.initDataSource();
+	}
+
+	/**
+	 * 
+	 * @param {HTMLElement} component 
+	 */
+	registerComponent(component){
+		this._components.push(component);
 	}
 
 	async initDataSource(){
@@ -38,8 +48,8 @@ class NmdTable extends HTMLParsedElement {
 		if(!dataSource)
 			throw new Error(`No registered data source handler for "${url.protocol}"`);
 		this._backend = new Backend(new dataSource(url));
-		this._renderer._backend = this._backend;
-		await this.render();
+		this._dispatchEvent("visible-rows-changed");
+		this.render();
 	}
 
 	get src(){
@@ -71,16 +81,13 @@ class NmdTable extends HTMLParsedElement {
 
 	async setPage(page){
 		if(await this._backend.setPage(page))
-			await this.render();
+			this._dispatchEvent("visible-rows-changed");
 	}
 
 	async render(){
 		await this._backend.fetchData(true);
-		this.dispatchEvent(new CustomEvent("pages-changed"));
-		if(this._rendered)
-			this._rendered.parentElement?.removeChild(this._rendered);
-		this._rendered = this._renderer.render();
-		this._renderSlot.appendChild(this._rendered);
+		this._dispatchEvent("pages-changed");
+		this._dispatchEvent("visible-rows-changed");
 	}
 
 	/**
@@ -97,6 +104,16 @@ class NmdTable extends HTMLParsedElement {
 			this._cols.pop();
 		for(let col of this.querySelectorAll("nmd-col"))
 			this._cols.push(col);
+	}
+
+	/**
+	 * 
+	 * @param {EventType} type 
+	 * @param {EventDetail} detail 
+	 */
+	_dispatchEvent(type, detail = {}){
+		let event = new CustomEvent(type, {detail});
+		this.dispatchEvent(event);
 	}
 
 	get _renderSlot(){
