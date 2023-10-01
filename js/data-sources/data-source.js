@@ -11,9 +11,12 @@ export default
 class DataSource {
 	/**
 	 * 
-	 * @param {URL} url 
+	 * @param {URL|string} url 
 	 */
 	constructor(url){
+		if(typeof(url) === "string")
+			//@ts-ignore There are few properties missing in Location, but it works.
+			url = new URL(url, location);
 		this.url = url;
 	}
 
@@ -28,9 +31,11 @@ class DataSource {
 	 * 
 	 * @param {number} _page 
 	 * @param {number} _pageSize 
+	 * @param {import("../helpers/filtering").Filter[]} _filters
+	 * @param {import("../helpers/sorting").Sort[]} _sorts
 	 * @returns {Promise<TableData>} promise of [data, size]
 	 */
-	async fetchData(_page, _pageSize){
+	async fetchData(_page, _pageSize, _filters = [], _sorts = []){
 		return {data: [], size: 0};
 	}
 }

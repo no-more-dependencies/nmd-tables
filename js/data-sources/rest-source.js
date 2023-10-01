@@ -16,7 +16,7 @@ class RestSource extends DataSource {
 
 	/**
 	 * 
-	 * @param {URL} url 
+	 * @param {URL|string} url 
 	 * @param {IDataMapper} dataMapper 
 	 */
 	constructor(url, dataMapper = new JsonObjectDataMapper(), paramMapper = RestSource.defaultUrlParamMapper){
@@ -29,9 +29,11 @@ class RestSource extends DataSource {
 	 * 
 	 * @param {number} page 
 	 * @param {number} pageSize 
+	 * @param {import("../helpers/filtering").Filter[]} filters
+	 * @param {import("../helpers/sorting").Sort[]} sorts
 	 * @returns {Promise<TableData>}
 	 */
-	async fetchData(page, pageSize){
+	async fetchData(page, pageSize, filters = [], sorts = []){
 		this.paramMapper(this.url, page, pageSize);
 		let response = await fetch(this.url.toString());
 		return this.dataMapper.map(await response.text());
@@ -40,14 +42,22 @@ class RestSource extends DataSource {
 
 RestSource.defaultPageParamName = "page";
 RestSource.defaultPageSizeParamName = "size";
+RestSource.defaultFilterParamName = "filter";
+RestSource.defaultSortParamName = "sort";
 
 /**
  * 
  * @param {URL} url 
  * @param {number} page 
  * @param {number} size 
+ * @param {import("../helpers/filtering").Filter[]} filters
+ * @param {import("../helpers/sorting").Sort[]} sorts
  */
-RestSource.defaultUrlParamMapper = function(url, page, size){
+RestSource.defaultUrlParamMapper = function(url, page, size, filters = [], sorts = []){
 	url.searchParams.set(RestSource.defaultPageParamName, page.toString());
 	url.searchParams.set(RestSource.defaultPageSizeParamName, size.toString());
+	if(filters.length > 0)
+		url.searchParams.set(RestSource.defaultFilterParamName, JSON.stringify(filters));
+	if(sorts.length > 0)
+		url.searchParams.set(RestSource.defaultSortParamName, JSON.stringify(sorts));
 }
