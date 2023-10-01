@@ -7,7 +7,7 @@ class Backend {
 	/**
 	 * 
 	 * @param {DataSource} dataSource 
-	 * @param {*} holdPages 
+	 * @param {boolean} holdPages 
 	 */
 	constructor(dataSource, holdPages = false){
 		this._data = [];
@@ -93,6 +93,7 @@ class Backend {
 	}
 
 	log(){
-		console.table(this._data);
+		console.table(this.data);
+		console.log(`Page ${this.page + 1} of ${this.pageCount}.`);
 	}
 }

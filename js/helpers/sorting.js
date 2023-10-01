@@ -1,6 +1,12 @@
 //@ts-check
 
 /**
+ * @typedef {Object} Sort
+ * @property {string} column
+ * @property {"ASC" | "DESC"} direction
+ */
+
+/**
  * @param {*} a 
  * @param {*} b 
  * @returns {1|0|-1}
